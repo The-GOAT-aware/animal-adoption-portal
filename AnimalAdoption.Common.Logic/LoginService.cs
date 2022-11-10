@@ -11,7 +11,7 @@
                 "icecream",
                 "basketball",
                 "orange",
-                "placeholder"
+                "goat"
             };
         }
 
@@ -36,8 +36,8 @@
                 case "orange":
                     name = "Murphy";
                     break;
-                case "placeholder":
-                    name = "Placeholder";
+                case "goat":
+                    name = "GOAT";
                     break;
             }
             return name;
