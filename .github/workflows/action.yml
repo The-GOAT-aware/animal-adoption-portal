@@ -6,8 +6,6 @@ name: .NET
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
@@ -25,6 +23,12 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Publish portal project in Release mode
+      run: dotnet publish ${{ github.workspace }}/AnimalAdoption.Web.Portal/AnimalAdoption.Web.Portal.csproj --configuration Release --no-build --output ./taa-portal/
+    - uses: actions/upload-artifact@v3
+      with:
+        name: my-artifact
+        path: ${{ github.workspace }}/taa-portal/
 
   test:
   
