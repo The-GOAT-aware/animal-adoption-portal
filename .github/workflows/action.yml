@@ -15,14 +15,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 3.1.x
+        
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --configuration Release --no-restore
+      
     - name: Publish portal project in Release mode
       run: dotnet publish ${{ github.workspace }}/AnimalAdoption.Web.Portal/AnimalAdoption.Web.Portal.csproj --configuration Release --no-build --output ./taa-portal/
     - uses: actions/upload-artifact@v3
