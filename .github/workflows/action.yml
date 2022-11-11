@@ -9,96 +9,96 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+#   build:
 
-    runs-on: ubuntu-latest
+#     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
+#     steps:
+#     - uses: actions/checkout@v3
     
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 3.1.x
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: 3.1.x
         
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+#     - name: Restore dependencies
+#       run: dotnet restore
+#     - name: Build
+#       run: dotnet build --configuration Release --no-restore
       
-    - name: Publish portal project in Release mode
-      run: dotnet publish ${{ github.workspace }}/AnimalAdoption.Web.Portal/AnimalAdoption.Web.Portal.csproj --configuration Release --no-build --output ./taa-portal/
-    - uses: actions/upload-artifact@v3
-      with:
-        name: my-artifact
-        path: ${{ github.workspace }}/taa-portal/
-        if-no-files-found: error
+#     - name: Publish portal project in Release mode
+#       run: dotnet publish ${{ github.workspace }}/AnimalAdoption.Web.Portal/AnimalAdoption.Web.Portal.csproj --configuration Release --no-build --output ./taa-portal/
+#     - uses: actions/upload-artifact@v3
+#       with:
+#         name: my-artifact
+#         path: ${{ github.workspace }}/taa-portal/
+#         if-no-files-found: error
 
-  test:
+#   test:
   
-    runs-on: ubuntu-latest
-    needs: build
+#     runs-on: ubuntu-latest
+#     needs: build
     
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 3.1.x
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: 3.1.x
+#     - name: Test
+#       run: dotnet test --no-build --verbosity normal
       
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
+#   deploy:
+#     runs-on: ubuntu-latest
+#     needs: test
 
-    steps:
-    - uses: actions/download-artifact@v3
-      with:
-        name: my-artifact
-    - uses: Azure/webapps-deploy@v2
-      with:
-        # Name of the Azure Web App
-        app-name: animal-adoption-portal-dev
-        # Applies to Web Apps(Windows and Linux) and Web App Containers(linux). Multi container scenario not supported. Publish profile (*.publishsettings) file contents with Web Deploy secrets
-        publish-profile: ${{ secrets.PUBLISH_PROFILE_DEV }}
-        # Enter an existing Slot other than the Production slot
-        slot-name: production
-        # Applies to Web App only: Path to package or folder. *.zip, *.war, *.jar or a folder to deploy
-        package: .
-    - uses: DawidB/get-secret-from-keyvault@v1.1.0
-      with:
-        # Credentials JSON with subscription id, tenant id, client id and client secret
-        azure_credentials: ${{ secrets.AZURE_SP }}
-        # Name of the Key Vault
-        key_vault_name: kv-goat-dev
-        # Name of the secret
-        secret_name: GlobalPassword
-      id: getSecretAction
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_SP }}
-    - uses: Azure/get-keyvault-secrets@v1
-      with:
-        keyvault: kv-goat-dev
-        secrets: GlobalPassword  # comma separated list of secret keys that need to be fetched from the Key Vault 
-      id: myGetSecretAction
-    - uses: Azure/appservice-settings@v1
-      with:
-        # Name of the Azure Web App
-        app-name: animal-adoption-portal-dev
-        # Application settings using the JSON syntax set as value of secret variable: APP_SETTINGS
-        app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ steps.getSecretAction.outputs.GlobalPassword }}", "slotSetting": false }]'
-    - uses: Azure/appservice-settings@v1
-      with:
-        # Name of the Azure Web App
-        app-name: animal-adoption-portal-dev
-        # Application settings using the JSON syntax set as value of secret variable: APP_SETTINGS
-        app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ steps.myGetSecretAction.outputs.GlobalPassword }}", "slotSetting": false }]'
+#     steps:
+#     - uses: actions/download-artifact@v3
+#       with:
+#         name: my-artifact
+#     - uses: Azure/webapps-deploy@v2
+#       with:
+#         # Name of the Azure Web App
+#         app-name: animal-adoption-portal-dev
+#         # Applies to Web Apps(Windows and Linux) and Web App Containers(linux). Multi container scenario not supported. Publish profile (*.publishsettings) file contents with Web Deploy secrets
+#         publish-profile: ${{ secrets.PUBLISH_PROFILE_DEV }}
+#         # Enter an existing Slot other than the Production slot
+#         slot-name: production
+#         # Applies to Web App only: Path to package or folder. *.zip, *.war, *.jar or a folder to deploy
+#         package: .
+#     - uses: DawidB/get-secret-from-keyvault@v1.1.0
+#       with:
+#         # Credentials JSON with subscription id, tenant id, client id and client secret
+#         azure_credentials: ${{ secrets.AZURE_SP }}
+#         # Name of the Key Vault
+#         key_vault_name: kv-goat-dev
+#         # Name of the secret
+#         secret_name: GlobalPassword
+#       id: getSecretAction
+#     - uses: azure/login@v1
+#       with:
+#         creds: ${{ secrets.AZURE_SP }}
+#     - uses: Azure/get-keyvault-secrets@v1
+#       with:
+#         keyvault: kv-goat-dev
+#         secrets: GlobalPassword  # comma separated list of secret keys that need to be fetched from the Key Vault 
+#       id: myGetSecretAction
+#     - uses: Azure/appservice-settings@v1
+#       with:
+#         # Name of the Azure Web App
+#         app-name: animal-adoption-portal-dev
+#         # Application settings using the JSON syntax set as value of secret variable: APP_SETTINGS
+#         app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ steps.getSecretAction.outputs.GlobalPassword }}", "slotSetting": false }]'
+#     - uses: Azure/appservice-settings@v1
+#       with:
+#         # Name of the Azure Web App
+#         app-name: animal-adoption-portal-dev
+#         # Application settings using the JSON syntax set as value of secret variable: APP_SETTINGS
+#         app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ steps.myGetSecretAction.outputs.GlobalPassword }}", "slotSetting": false }]'
         
   deploy-resources-with-bicep:
     runs-on: ubuntu-latest
-    needs: deploy
+#     needs: deploy
 
     steps:
     
