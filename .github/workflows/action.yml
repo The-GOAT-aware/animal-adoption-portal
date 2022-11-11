@@ -102,6 +102,9 @@ jobs:
 
     steps:
     
+    - name: Checkout git code
+      uses: actions/checkout@master
+    
     - name: Login
       uses: azure/login@v1
       with:
