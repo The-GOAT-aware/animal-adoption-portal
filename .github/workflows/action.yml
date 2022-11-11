@@ -47,3 +47,22 @@ jobs:
         dotnet-version: 3.1.x
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: my-artifact
+    - uses: Azure/webapps-deploy@v2
+      with:
+        # Name of the Azure Web App
+        app-name: animal-adoption-portal-dev
+        # Applies to Web Apps(Windows and Linux) and Web App Containers(linux). Multi container scenario not supported. Publish profile (*.publishsettings) file contents with Web Deploy secrets
+        publish-profile: ${{ secrets.PUBLISH_PROFILE_DEV }}
+        # Enter an existing Slot other than the Production slot
+        slot-name: production
+        # Applies to Web App only: Path to package or folder. *.zip, *.war, *.jar or a folder to deploy
+        package: .
