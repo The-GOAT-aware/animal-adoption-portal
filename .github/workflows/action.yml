@@ -66,12 +66,32 @@ jobs:
         slot-name: production
         # Applies to Web App only: Path to package or folder. *.zip, *.war, *.jar or a folder to deploy
         package: .
+    - uses: DawidB/get-secret-from-keyvault@v1.1.0
+      with:
+        # Credentials JSON with subscription id, tenant id, client id and client secret
+        azure_credentials: ${{ secrets.AZURE_SP }}
+        # Name of the Key Vault
+        key_vault_name: kv-goat-dev
+        # Name of the secret
+        secret_name: GlobalPassword
+      id: getSecretAction
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_SP }}
+    - uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: kv-goat-dev
+        secrets: GlobalPassword  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction
     - uses: Azure/appservice-settings@v1
       with:
         # Name of the Azure Web App
         app-name: animal-adoption-portal-dev
         # Application settings using the JSON syntax set as value of secret variable: APP_SETTINGS
-        app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ secrets.GLOBAL_PASSWORD_DEV }}", "slotSetting": false }]'
+        app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ steps.getSecretAction.outputs.GlobalPassword }}", "slotSetting": false }]'
+    - uses: Azure/appservice-settings@v1
+      with:
+        # Name of the Azure Web App
+        app-name: animal-adoption-portal-dev
+        # Application settings using the JSON syntax set as value of secret variable: APP_SETTINGS
+        app-settings-json: '[{ "name": "GlobalPassword", "value": "${{ steps.myGetSecretAction.outputs.GlobalPassword }}", "slotSetting": false }]'
