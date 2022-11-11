@@ -66,6 +66,9 @@ jobs:
         slot-name: production
         # Applies to Web App only: Path to package or folder. *.zip, *.war, *.jar or a folder to deploy
         package: .
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_SP }}
     - uses: Azure/appservice-settings@v1
       with:
         # Name of the Azure Web App
